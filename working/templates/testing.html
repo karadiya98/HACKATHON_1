@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding-top: 30px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Subject Marks</h1>
+        <table id="studentTable">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Math</th>
+                    <th>Science</th>
+                    <th>English</th>
+                    <th>History</th>
+                    <th>Art</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const studentsData = [
+                { name: "Mohan", marks: { Math: 85, Science: 78, English: 92, History: 70, Art: 65 } },
+                { name: "Priya", marks: { Math: 90, Science: 88, English: 85, History: 75, Art: 95 } },
+                { name: "Rahul", marks: { Math: 70, Science: 65, English: 75, History: 80, Art: 72 } },
+                { name: "Simran", marks: { Math: 95, Science: 92, English: 98, History: 90, Art: 88 } },
+                { name: "Amit", marks: { Math: 80, Science: 82, English: 70, History: 68, Art: 78 } }
+            ];
+
+            const tableBody = document.querySelector('#studentTable tbody');
+
+            studentsData.forEach(student => {
+                const row = tableBody.insertRow();
+                row.dataset.student = JSON.stringify(student); // Store student data in a data attribute
+
+                const nameCell = row.insertCell();
+                nameCell.textContent = student.name;
+
+                for (const subject in student.marks) {
+                    const markCell = row.insertCell();
+                    markCell.textContent = student.marks[subject];
+                }
+
+                row.addEventListener('click', function() {
+                    const studentDataString = this.dataset.student;
+                    // Encode the student data as a URL parameter
+                    const encodedData = encodeURIComponent(studentDataString);
+                    // Redirect to the chart page with the data
+                    window.location.href = `student_chart.html?data=${encodedData}`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

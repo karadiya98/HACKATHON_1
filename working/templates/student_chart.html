@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks Pie Chart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column; /* To stack title, chart, and legend */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+
+        .chart-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        svg {
+            display: block; /* Remove extra space below SVG */
+            margin: 0 auto; /* Center the SVG */
+        }
+
+        .slice-label {
+            font-size: 0.8em; /* Slightly smaller for better fit */
+            fill: #333;
+            text-anchor: middle; /* Center text horizontally */
+            pointer-events: none; /* Make text not interfere with slice clicks */
+        }
+
+        .legend {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            padding: 0 10px; /* Add some padding for smaller screens */
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+
+        #backButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        #backButton:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <h1 id="studentNameHeader">Student Marks Pie Chart</h1>
+        <svg id="pieChart" width="300" height="300" viewBox="0 0 100 100">
+            </svg>
+        <div class="legend" id="chartLegend">
+            </div>
+    </div>
+    <button id="backButton" onclick="window.history.back()">Go Back</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Define a set of appealing colors for the pie slices
+            const colors = [
+                "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF",
+                "#FF9F40", "#C9CBCF", "#6A8CFF", "#FFC3A0", "#9B7C7C"
+            ];
+
+            const svg = document.getElementById('pieChart');
+            const legendContainer = document.getElementById('chartLegend');
+            const studentNameHeader = document.getElementById('studentNameHeader');
+
+            // --- Function to parse URL parameters ---
+            function getUrlParameter(name) {
+                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                const results = regex.exec(location.search);
+                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+            };
+
+            // Get the student data from the URL parameter
+            const encodedStudentData = getUrlParameter('data');
+            let student = null;
+            if (encodedStudentData) {
+                try {
+                    student = JSON.parse(encodedStudentData);
+                    studentNameHeader.textContent = `${student.name}'s Marks Distribution`;
+                } catch (e) {
+                    console.error("Error parsing student data from URL:", e);
+                    studentNameHeader.textContent = "Error Loading Student Data";
+                    return; // Stop execution if data is invalid
+                }
+            } else {
+                studentNameHeader.textContent = "No Student Data Found";
+                return; // Stop execution if no data
+            }
+
+            const marks = student.marks;
+            const totalMarks = Object.values(marks).reduce((sum, mark) => sum + mark, 0);
+
+            let startAngle = 0; // Starting angle for the first slice
+            const centerX = 50;
+            const centerY = 50;
+            const radius = 40;
+
+            // Function to get SVG path for a pie slice
+            function getSlicePath(cx, cy, r, startAngle, endAngle) {
+                const startX = cx + r * Math.cos(startAngle * Math.PI / 180);
+                const startY = cy + r * Math.sin(startAngle * Math.PI / 180);
+                const endX = cx + r * Math.cos(endAngle * Math.PI / 180);
+                const endY = cy + r * Math.sin(endAngle * Math.PI / 180);
+
+                const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
+
+                return [
+                    `M ${cx},${cy}`, // Move to center
+                    `L ${startX},${startY}`, // Line to start of arc
+                    `A ${r},${r} 0 ${largeArcFlag} 1 ${endX},${endY}`, // Arc
+                    `Z` // Close path to center
+                ].join(' ');
+            }
+
+            let colorIndex = 0;
+            for (const subject in marks) {
+                const mark = marks[subject];
+                const sliceAngle = (mark / totalMarks) * 360;
+                const endAngle = startAngle + sliceAngle;
+
+                const color = colors[colorIndex % colors.length]; // Cycle through colors
+
+                // Create SVG Path element for the slice
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', getSlicePath(centerX, centerY, radius, startAngle, endAngle));
+                path.setAttribute('fill', color);
+                svg.appendChild(path);
+
+                // Add text label for the slice (inside the slice)
+                const midAngle = startAngle + (sliceAngle / 2);
+                const labelRadius = radius * 0.7; // Position text slightly inside the slice
+                const labelX = centerX + labelRadius * Math.cos(midAngle * Math.PI / 180);
+                const labelY = centerY + labelRadius * Math.sin(midAngle * Math.PI / 180);
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', labelX);
+                text.setAttribute('y', labelY);
+                text.classList.add('slice-label');
+                // Display subject name and percentage
+                text.textContent = `${((mark / totalMarks) * 100).toFixed(0)}%`;
+                svg.appendChild(text);
+
+                // Create legend item
+                const legendItem = document.createElement('div');
+                legendItem.classList.add('legend-item');
+
+                const legendColor = document.createElement('div');
+                legendColor.classList.add('legend-color');
+                legendColor.style.backgroundColor = color;
+
+                const legendText = document.createElement('span');
+                legendText.textContent = `${subject} (${mark})`; // Show subject and actual mark
+
+                legendItem.appendChild(legendColor);
+                legendItem.appendChild(legendText);
+                legendContainer.appendChild(legendItem);
+
+                startAngle = endAngle; // Update start angle for the next slice
+                colorIndex++;
+            }
+        });
+    </script>
+</body>
+</html>

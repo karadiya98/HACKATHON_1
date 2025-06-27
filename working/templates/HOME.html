@@ -1,0 +1,2303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>INSPIRE Predictive MODEL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Variables for easy theme management (UPDATED COLOR PALETTE) */
+        :root {
+            /* Core Backgrounds & Elements */
+            --primary-dark-bg: #0D1A26; /* Very deep, almost black blue-grey for main background */
+            --secondary-card-bg: #1A2E44; /* Dark blue-grey for cards and sections */
+            --tertiary-hover-bg: #21354F; /* Slightly lighter dark blue-grey for subtle hovers */
+
+            /* Accent & Highlight Colors - Inspired by data visualization/neural networks */
+            --accent-main: #34D399; /* Bright, vibrant teal-green for primary highlights (similar to your teal, but more 'techy') */
+            --accent-light: #6EE7B7; /* Lighter version of accent-main for soft glows */
+            --accent-dark: #06B6D4; /* A complementary vibrant cyan/blue for secondary highlights */
+
+            /* Text Colors */
+            --text-heading: #E2E8F0; /* Off-white for prominent headings */
+            --text-body: #A0AEC0; /* Light grey for main body text */
+            --text-muted: #718096; /* Darker grey for subtle text/details */
+
+            /* Borders & Shadows */
+            --border-subtle: rgba(255, 255, 255, 0.06); /* Very light border */
+            --shadow-primary: rgba(0, 0, 0, 0.4); /* Stronger shadow for depth */
+            --shadow-glow: rgba(52, 211, 153, 0.3); /* Accent-driven shadow glow */
+
+            /* Gradient Definitions */
+            --gradient-1-start: var(--accent-main); /* Teal-green */
+            --gradient-1-end: var(--accent-dark); /* Cyan-blue */
+            --gradient-2-start: #3498DB; /* Classic blue for secondary actions */
+            --gradient-2-end: #2980B9; /* Darker blue */
+            --gradient-clear-start: #E74C3C; /* Red for clear/danger */
+            --gradient-clear-end: #C0392B; /* Darker red */
+
+
+            /* Specific Component Colors */
+            --header-backdrop: rgba(13, 26, 38, 0.85); /* Slightly transparent based on primary-dark-bg */
+            --button-danger: #E74C3C; /* Retain strong red for danger */
+            --button-success: #2ECC71; /* Slightly brighter green for success */
+
+            /* Fonts */
+            --font-main: 'Inter', sans-serif; /* Your chosen font */
+            --font-heading: 'Inter', sans-serif; /* Keep Inter for consistency unless a specific display font is needed */
+        }
+
+               body {
+            font-family: var(--font-main);
+            background-color: #f6f5f6; /* Base light background */
+            color: var(--text-on-light); /* Dark text for contrast on light background */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Subtle animated background grid for depth */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+            background-size: 40px 40px; /* Adjust grid size */
+            opacity: 0.8;
+            z-index: -1;
+            pointer-events: none;
+            animation: pulseGrid 8s infinite alternate ease-in-out; /* Animation added */
+        }
+
+        @keyframes pulseGrid {
+            0% { background-color: rgba(52, 211, 153, 0.02); opacity: 0.8; }
+            50% { background-color: rgba(6, 182, 212, 0.02); opacity: 0.9; }
+            100% { background-color: rgba(52, 211, 153, 0.02); opacity: 0.8; }
+        }
+
+        /* --- Header Section --- */
+       header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    /* This line creates the darker gradient background */
+    background: var(--primary-dark-bg);
+    box-shadow: 0 4px 15px var(--shadow-primary);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-radius: 0 0 15px 15px;
+}
+
+        .header-left {
+            display: table-row;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .header-logo {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: var(--accent-main); /* Main accent color for logo */
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-shadow: 0 0 10px var(--shadow-glow); /* Accent-driven text shadow */
+            text-decoration: none;
+        }
+
+        .header-logo i {
+            font-size: 2rem;
+            color: var(--accent-main);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+        }
+
+        .logo-text .tagline {
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--text-heading);
+        }
+
+        .logo-text .company-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            opacity: 0.8;
+            margin-top: 2px;
+            margin-right: 60px; /* Kept your margin-right */
+            line-height: 1;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 35px;
+            margin-left: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 1.05rem;
+            padding: 8px 15px;
+            position: relative;
+            transition: color 0.3s ease, background-color 0.3s ease, transform 0.2s ease;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 3px;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gradient-1-start), var(--gradient-1-end));
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--text-heading);
+            background-color: var(--tertiary-hover-bg); /* Adjusted for new palette */
+            transform: translateY(-2px);
+        }
+
+        nav a:hover::after {
+            width: 80%;
+        }
+
+        nav a.active {
+            color: var(--accent-main); /* Active link uses main accent */
+            font-weight: 600;
+            background-color: rgba(52, 211, 153, 0.15); /* Soft accent background for active */
+            transform: translateY(-2px);
+        }
+
+        nav a.active::after {
+            width: 100%;
+            background: var(--accent-main);
+        }
+
+        .header-auth {
+            display: flex;
+            gap: 25px;
+        }
+
+        .header-auth a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.98rem;
+            font-weight: 500;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .header-auth a:hover {
+            color: var(--text-heading);
+            transform: translateY(-2px);
+        }
+
+        /* --- Main Content Section --- */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Changed to flex-start to allow content flow */
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        /* --- Upload Section --- */
+        .upload-section {
+            background-color: #fffeff; /* Card background */
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px var(--shadow-primary); /* Primary shadow */
+            border: 1px solid var(--border-subtle);
+            width: 90%;
+            max-width: 80%;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .upload-section::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, var(--accent-main), transparent 70%); /* Main accent glow */
+            filter: blur(70px);
+            opacity: 0.15;
+            z-index: 0;
+            animation: rotateGlow 15s infinite linear;
+        }
+
+        .upload-section::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, var(--accent-dark), transparent 70%); /* Complementary accent glow */
+            filter: blur(70px);
+            opacity: 0.15;
+            z-index: 0;
+            animation: rotateGlow 15s infinite reverse linear;
+        }
+
+        @keyframes rotateGlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .upload-section h2 {
+            font-family: var(--font-heading);
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--text-heading); /* Fallback for browsers */
+            background: linear-gradient(90deg, var(--gradient-1-start), var(--gradient-1-end));
+            /* -webkit-background-clip: text; */
+            -webkit-text-fill-color: transparent; /* Make text transparent to show gradient */
+            text-shadow: 0 0 15px var(--shadow-glow); /* Accent-driven text shadow */
+            position: relative;
+            z-index: 1;
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- Buttons --- */
+        .button { /* Generic button style for consistency */
+            color: #fff;
+            padding: 15px 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap; /* Prevent text wrap */
+        }
+
+        .button i {
+            font-size: 1.2rem;
+        }
+
+        .button:hover:not(:disabled) { /* Apply hover effect only if not disabled */
+            transform: translateY(-4px) scale(1.02);
+            filter: brightness(1.15); /* Slightly brighter */
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none !important; /* Remove shadows when disabled */
+        }
+
+        .upload-button { /* Specific style for upload label */
+            background: linear-gradient(45deg, var(--gradient-1-start), var(--gradient-1-end)); /* Main accent gradient */
+            box-shadow: 0 5px 20px var(--shadow-glow), 0 0 15px var(--shadow-glow); /* Accent-driven shadows */
+            /* This is now a label acting as a button */
+        }
+        .upload-button:hover:not(:disabled) {
+            box-shadow: 0 8px 25px rgba(102, 243, 191, 0.6), 0 0 25px rgba(52, 211, 153, 0.7); /* Stronger accent glow on hover */
+        }
+
+        .predict-button {
+            background: linear-gradient(45deg, var(--gradient-2-start), var(--gradient-2-end)); /* New blue gradient for Predict */
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4); /* Blue-specific shadow */
+        }
+
+        .predict-button:hover:not(:disabled) {
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.6); /* Stronger blue shadow on hover */
+            background: linear-gradient(45deg, #2E86C1, #21618C); /* Darker blue gradient on hover */
+        }
+
+        .clear-button {
+            background: linear-gradient(45deg, var(--gradient-clear-start), var(--gradient-clear-end)); /* Red gradient for Clear */
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4); /* Red-specific shadow */
+        }
+        .clear-button:hover:not(:disabled) {
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.6); /* Stronger red shadow on hover */
+            background: linear-gradient(45deg, #C0392B, #A93226); /* Darker red gradient on hover */
+        }
+
+        .view-csv-button { /* New button style for viewing CSV */
+            background: linear-gradient(45deg, #8E44AD, #9B59B6); /* Purple gradient */
+            box-shadow: 0 5px 20px rgba(142, 68, 173, 0.4);
+        }
+        .view-csv-button:hover:not(:disabled) {
+            box-shadow: 0 8px 25px rgba(142, 68, 173, 0.6);
+            background: linear-gradient(45deg, #6C3483, #5B2C6F);
+        }
+
+        /* NEW: Download Button Style */
+        .download-button {
+            background: linear-gradient(45deg, #1ABC9C, #16A085); /* A nice teal/green */
+            box-shadow: 0 5px 20px rgba(26, 188, 156, 0.4);
+            margin-top: 20px; /* Space from the table */
+        }
+
+        .download-button:hover:not(:disabled) {
+            box-shadow: 0 8px 25px rgba(26, 188, 156, 0.6);
+            background: linear-gradient(45deg, #16A085, #117A65);
+        }
+
+
+        input[type="file"] {
+            display: none; /* Hide the default file input */
+        }
+
+        #fileName {
+            font-style: italic;
+            color: var(--text-body);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 250px;
+        }
+
+        /* --- Message Styles (from previous simple HTML) --- */
+        .error-message {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: left; /* Align text within message boxes */
+            width: 100%;
+        }
+
+        .success-message {
+            color: #28a745;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: left; /* Align text within message boxes */
+            width: 100%;
+        }
+
+        /* --- Data Preview Container --- */
+        .data-preview-container {
+            width: 100%;
+            background-color: var(--secondary-card-bg); /* Card background */
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            padding: 20px;
+            margin-top: 30px;
+            text-align: left;
+            max-height: 500px; /* Adjusted height for better viewing */
+            overflow-y: auto;
+            box-shadow: inset 0 2px 10px var(--shadow-primary); /* Inner shadow */
+            position: relative;
+            z-index: 1;
+            display: none; /* Initially hide the data preview container */
+        }
+
+        .data-preview-container.active {
+            display: block; /* Show when active */
+        }
+
+        .data-preview-container h3 {
+            color: var(--accent-main); /* Main accent for sub-headings */
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            text-shadow: 0 0 8px var(--shadow-glow); /* Accent-driven text glow */
+        }
+
+        /* Updated selectors to target any table within data-preview-container */
+        .data-preview-container table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .data-preview-container table th,
+        .data-preview-container table td {
+            border: 1px solid rgba(255, 255, 255, 0.04); /* Even lighter border for table cells */
+            padding: 10px 15px;
+            text-align: left;
+            color: var(--text-body); /* Ensure cell text is readable */
+            vertical-align: top; /* Align cell content to top */
+        }
+
+        .data-preview-container table th {
+            background-color: var(--tertiary-hover-bg); /* Header background for table */
+            color: var(--text-heading);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .data-preview-container table tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.08); /* Slightly darker stripe for even rows */
+        }
+
+        .data-preview-container table tr:hover {
+            background-color: rgba(0, 0, 0, 0.2); /* Enhanced hover effect for rows */
+        }
+
+        .no-data-message {
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 20px;
+            text-align: center; /* Center the message */
+        }
+
+        /* Added new styles for button container */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* Space between buttons */
+            margin-top: 20px;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        }
+
+        /* --- Footer Section --- */
+        footer {
+            background: linear-gradient(135deg, var(--primary-dark-bg), #08121A); /* Slightly darker endpoint for depth */
+            /* Consistent with header */
+            padding: 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-subtle);
+            margin-top: auto;
+            box-shadow: 0 -4px 15px var(--shadow-primary); /* Consistent shadow */
+            border-radius: 15px 15px 0 0; /* Rounded bottom corners */
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 992px) {
+            header {
+                padding: 20px 30px;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+            .header-left {
+                width: 100%;
+                justify-content: center;
+                gap: 15px;
+            }
+            nav ul {
+                width: 100%;
+                justify-content: center;
+                margin-left: 0;
+                gap: 20px;
+            }
+            .header-auth {
+                width: 100%;
+                justify-content: center;
+                margin-top: 10px;
+            }
+            main {
+                padding: 60px 15px;
+            }
+            .upload-section {
+                padding: 30px;
+            }
+            .upload-section h2 {
+                font-size: 2.2rem;
+            }
+            .file-input-wrapper {
+                flex-direction: column;
+                gap: 10px;
+            }
+            #fileName {
+                max-width: 100%;
+                text-align: center;
+            }
+            .action-buttons {
+                flex-direction: column; /* Stack buttons on smaller screens */
+                gap: 15px;
+            }
+            .button {
+                width: 100%;
+                max-width: 300px; /* Limit button width even when stacked */
+                margin: 0 auto; /* Center buttons */
+            }
+            .data-insights-container {
+                padding: 20px;
+            }
+            .insight-item {
+                font-size: 1rem;
+            }
+            .insight-item i {
+                font-size: 1.2rem;
+            }
+            .department-list {
+                padding-left: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px 20px;
+                border-radius: 0;
+            }
+            .header-left {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .header-logo {
+                font-size: 1.4rem;
+                gap: 10px;
+                flex-direction: row;
+            }
+            .header-logo i {
+                font-size: 1.8rem;
+                margin-bottom: 0;
+            }
+            .logo-text {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .company-name {
+                margin-left: 0;
+                margin-top: 2px;
+                font-size: 0.8rem;
+            }
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .upload-section h2 {
+                font-size: 1.8rem;
+            }
+            .data-insights-container {
+                padding: 15px;
+            }
+            .data-insights-container h3 {
+                font-size: 1.4rem;
+                margin-bottom: 15px;
+            }
+            .insight-item {
+                font-size: 0.95rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .insight-item i {
+                margin-bottom: 5px;
+            }
+            .department-list li {
+                font-size: 0.9rem;
+            }
+            .data-preview-container {
+                max-height: 250px;
+            }
+            .data-preview-container table th,
+            .data-preview-container table td {
+                padding: 8px 10px;
+            }
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-style: italic;
+            margin-bottom: 30px;
+            padding: 10px 20px; /* Added horizontal padding for better visual balance */
+            border-radius: 10px; /* Now this will be visible! */
+            color: var(--text-heading); /* Text color will be this, not transparent */
+            background: linear-gradient(90deg, var(--gradient-1-start), var(--gradient-1-end)); /* This will fill the entire h2 box */
+            /* REMOVED: -webkit-background-clip: text; */
+            /* REMOVED: -webkit-text-fill-color: transparent; */
+            
+            /* Enhanced text shadow for the text itself (will still work on solid text color) */
+            text-shadow:
+                0 0 5px rgba(255, 255, 255, 0.4),
+                0 0 15px var(--shadow-glow),
+                0 0 25px var(--shadow-glow);
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.03em;
+            line-height: 1.2;
+
+            /* Animation for a subtle "breathing" glow effect (still applies to text-shadow) */
+            animation: textGlowPulse 3s infinite alternate ease-in-out;
+        }
+
+        /* Keyframes for the text glow animation remain the same */
+        @keyframes textGlowPulse {
+            0% {
+                text-shadow:
+                    0 0 5px rgba(255, 255, 255, 0.4),
+                    0 0 15px var(--shadow-glow),
+                    0 0 25px var(--shadow-glow);
+            }
+            100% {
+                text-shadow:
+                    0 0 8px rgba(255, 255, 255, 0.6),
+                    0 0 20px var(--shadow-glow),
+                    0 0 35px var(--shadow-glow);
+            }
+        }
+
+        /* Specific styles for the chart section */
+        .chart-section {
+            background-color: var(--secondary-card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px var(--shadow-primary);
+            border: 1px solid var(--border-subtle);
+            width: 90%;
+            max-width: 900px;
+            margin-top: 40px; /* Space from the upload section */
+            text-align: center; /* Center the heading and description */
+        }
+
+        .chart-section h3 {
+            color: var(--accent-main);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px var(--shadow-glow);
+        }
+
+        .chart-embed {
+            background-color: var(--primary-dark-bg); /* Darker background for the iframe area */
+            border-radius: 8px;
+            overflow: hidden; /* Ensures chart content stays within rounded borders */
+            display: flex; /* Use flexbox to center iframe */
+            justify-content: center;
+            align-items: center;
+            padding: 10px; /* Inner padding for the chart */
+        }
+
+        .chart-embed iframe {
+            width: 100%;
+            height: 600px; /* Fixed height for the chart, adjust as needed */
+            border: none;
+        }
+
+        .chart-description {
+            color: var(--text-body);
+            margin-top: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .chart-section {
+                padding: 20px;
+            }
+            .chart-section h3 {
+                font-size: 1.5rem;
+            }
+            .chart-embed iframe {
+                height: 400px; /* Adjust height for smaller screens */
+            }
+        }
+
+
+
+/* --- Key Checks Section Styling (Even More Compact, Square-like Items) --- */
+.checks-section {
+    background: linear-gradient(135deg, var(--primary-dark-bg), #4b5e70);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 50px; /* Section padding remains compact */
+    max-width: 100%; /* Reduced max-width for a tighter overall section */
+    width: 100%;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 2px; /* Centered, slightly more balanced margins */
+    position: relative;
+}
+
+.checks-section h3 {
+    color: #b0c0cf;
+    font-size: 1.8em; /* Further reduced heading font size */
+    margin-bottom: 25px; /* Reduced margin */
+    position: relative;
+    padding-bottom: 10px; /* Reduced padding-bottom for the underline */
+}
+
+.checks-section h3::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    width: 50px; /* Shorter underline */
+    height: 3px; /* Thinner underline */
+    background-color: #3498db;
+    border-radius: 2px;
+}
+
+.check-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px; /* Reduced gap between items for tighter packing */
+}
+
+.check-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    
+    /* Calculate width for 2 columns, with a 15px gap */
+    /* (Total width - (number of gaps * gap_size)) / number of items per row */
+    /* (100% - (1 * 15px)) / 2 = 50% - 7.5px */
+    flex: 1 1 calc(50% - 7.5px); /* Adjusted flex-basis */
+    max-width: calc(50% - 7.5px); /* Ensures a consistent 2-column layout */
+
+    /* Key to making it square-like */
+    min-height: 180px; /* Set a fixed minimum height to push it towards square. Adjust this value */
+    max-height: 220px; /* Add a max-height to prevent it from becoming too tall with much content */
+    overflow: hidden; /* Hide overflowing text if it exceeds max-height */
+
+    background-color: #e6e3e3;
+    padding: 15px; /* Significantly reduced padding for a smaller container */
+    border-radius: 10px; /* Slightly smaller border-radius */
+    border: 1px solid #c2c2c2;
+    transition: all 0.2s ease; /* Faster transition for snappier feel */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* Even softer initial shadow */
+    color: #34495e;
+}
+
+@media (min-width: 768px) {
+    .check-item {
+        /* Maintain the 2-column calculation */
+        flex: 1 1 calc(50% - 7.5px);
+        max-width: calc(50% - 7.5px);
+    }
+}
+
+.check-item:hover {
+    transform: translateY(-3px) rotate(0.2deg); /* Even more subtle lift and rotate */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); /* Softer hover shadow */
+    background-color: #ffffff;
+    border-color: #3498db;
+}
+
+.check-item i {
+    font-size: 2em; /* Smaller icons to fit */
+    color: #3498db;
+    margin-bottom: 10px; /* Reduced space below icon */
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.03); /* Very subtle shadow */
+}
+
+.check-item-content h4 {
+    color: #34495e;
+    font-size: 1.1em; /* Smaller heading font size */
+    margin-top: 0;
+    margin-bottom: 6px; /* Reduced margin */
+    line-height: 1.2;
+}
+
+.check-item-content p {
+    color: #5d6d7e;
+    font-size: 0.85em; /* Smaller paragraph font size */
+    line-height: 1.4; /* Tighter line height */
+    margin-bottom: 0;
+    /* Optional: Limit lines if needed for extreme squareness, but can cut off text */
+    /* display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limit to 3 lines */
+    /* -webkit-box-orient: vertical; */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .check-item {
+        flex: 1 1 95%; /* Almost full width on small screens */
+        max-width: 95%;
+        min-height: 160px; /* Adjust min-height for smaller screens */
+        max-height: 200px;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .checks-section {
+        padding: 15px;
+    }
+    .checks-section h3 {
+        font-size: 1.6em;
+        margin-bottom: 15px;
+    }
+    .check-item {
+        padding: 10px;
+        min-height: 140px; /* Further reduced min-height */
+        max-height: 180px;
+    }
+    .check-item i {
+        font-size: 1.8em;
+        margin-bottom: 8px;
+    }
+    .check-item-content h4 {
+        font-size: 1em;
+    }
+    .check-item-content p {
+        font-size: 0.8em;
+    }
+}
+
+/* new css below  */
+
+/* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Variables for easy theme management (UPDATED COLOR PALETTE) */
+        :root {
+            /* Core Backgrounds & Elements */
+            --primary-dark-bg: #0D1A26; /* Very deep, almost black blue-grey for main background */
+            --secondary-card-bg: #1A2E44; /* Dark blue-grey for cards and sections */
+            --tertiary-hover-bg: #21354F; /* Slightly lighter dark blue-grey for subtle hovers */
+
+            /* Accent & Highlight Colors - Inspired by data visualization/neural networks */
+            --accent-main: #34D399; /* Bright, vibrant teal-green for primary highlights (similar to your teal, but more 'techy') */
+            --accent-light: #6EE7B7; /* Lighter version of accent-main for soft glows */
+            --accent-dark: #06B6D4; /* A complementary vibrant cyan/blue for secondary highlights */
+
+            /* Text Colors */
+            --text-heading: #E2E8F0; /* Off-white for prominent headings */
+            --text-body: #A0AEC0; /* Light grey for main body text */
+            --text-muted: #718096; /* Darker grey for subtle text/details */
+            --text-on-light: #334155; /* Dark text for light backgrounds */
+
+            /* Borders & Shadows */
+            --border-subtle: rgba(255, 255, 255, 0.06); /* Very light border */
+            --shadow-primary: rgba(0, 0, 0, 0.4); /* Stronger shadow for depth */
+            --shadow-glow: rgba(52, 211, 153, 0.3); /* Accent-driven shadow glow */
+
+            /* Gradient Definitions */
+            --gradient-1-start: var(--accent-main); /* Teal-green */
+            --gradient-1-end: var(--accent-dark); /* Cyan-blue */
+            --gradient-2-start: #3498DB; /* Classic blue for secondary actions */
+            --gradient-2-end: #2980B9; /* Darker blue */
+
+            /* Specific Component Colors */
+            --header-backdrop: rgba(13, 26, 38, 0.85); /* Slightly transparent based on primary-dark-bg */
+            --button-danger: #E74C3C; /* Retain strong red for danger */
+            --button-success: #2ECC71; /* Slightly brighter green for success */
+
+            /* Fonts */
+            --font-main: 'Inter', sans-serif; /* Your chosen font */
+            --font-heading: 'Inter', sans-serif; /* Keep Inter for consistency unless a specific display font is needed */
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: #f6f5f6; /* Base light background */
+            color: var(--text-on-light); /* Dark text for contrast on light background */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Subtle animated background grid for depth */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+            background-size: 40px 40px; /* Adjust grid size */
+            opacity: 0.8;
+            z-index: -1;
+            pointer-events: none;
+            animation: pulseGrid 8s infinite alternate ease-in-out; /* Animation added */
+        }
+
+        @keyframes pulseGrid {
+            0% { background-color: rgba(52, 211, 153, 0.02); opacity: 0.8; }
+            50% { background-color: rgba(6, 182, 212, 0.02); opacity: 0.9; }
+            100% { background-color: rgba(52, 211, 153, 0.02); opacity: 0.8; }
+        }
+
+
+        /* --- Header Section --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background-color: var(--primary-dark-bg); /* Dark header */
+            box-shadow: 0 4px 15px var(--shadow-primary);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .header-logo {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: var(--accent-main);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-shadow: 0 0 10px var(--shadow-glow);
+            text-decoration: none;
+        }
+
+        .header-logo i {
+            font-size: 2rem;
+            color: var(--accent-main);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        
+
+        .logo-text .company-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            opacity: 0.8;
+            margin-top: 2px;
+            margin-right: 60px;
+            line-height: 1;
+        }
+
+        /* Hamburger Menu Toggle */
+        .mobile-menu-toggle {
+            display: none; /* Hidden by default on large screens */
+            font-size: 1.8rem;
+            color: var(--text-heading);
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin-right: 20px; /* Space between toggle and logo */
+        }
+
+        .mobile-menu-toggle:hover {
+            background-color: var(--tertiary-hover-bg);
+            color: var(--accent-light);
+        }
+
+/* ------------------------------------------------------------------------------------------------------------ */
+      /* --- Navigation Container --- */
+nav {
+    margin-left: 190px;
+    /* Assuming your existing nav background is fine */
+    padding: 7px 0; /* Reduced padding for a more compact bar */
+    border-top: 1px solid rgba(255, 255, 255, 0.06); /* Slightly less prominent border */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25), /* Smaller shadow for less visual weight */
+                0 0 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    border-radius: 15px;
+    justify-content:flex-end; /* Align left to accommodate margin-left */
+    align-items: center;
+    width: 100%
+    
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px; /* Further reduced gap for a tighter layout */
+    margin-left: 30px;
+    margin-right: 30px;
+    padding: 0;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.85rem; /* Significantly reduced font size */
+    padding: 8px 14px; /* Significantly reduced padding for a smaller button look */
+    position: relative;
+    transition: color 0.3s ease, background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, border-radius 0.3s ease;
+    border-radius: 6px; /* Smaller border-radius to match compactness */
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Reduced gap between icon and text */
+    overflow: hidden;
+    z-index: 1;
+}
+
+nav a i {
+    font-size: 0.9rem; /* Icon size scales with text */
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+}
+
+/* --- Nav Hover Effect (Dynamic Background Fill) --- */
+nav a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(var(--gradient-1-start-rgb, 106, 17, 203), 0.08); /* Slightly less transparent */
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+    border-radius: 6px; /* Match link border-radius */
+    z-index: -1;
+}
+
+nav a:hover::before {
+    transform: scaleX(1);
+}
+
+
+nav a:hover {
+    color: var(--text-heading);
+    transform: translateY(-2px); /* Smaller lift on hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), /* Smaller shadow on hover */
+                0 0 10px rgba(var(--gradient-1-start-rgb, 106, 17, 203), 0.25); /* Less intense glow */
+}
+
+nav a:hover i {
+    color: var(--gradient-1-start);
+}
+
+/* --- Nav Underline Effect (Subtle Line) --- */
+nav a::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 3px; /* Kept subtle */
+    width: 0;
+    height: 2px; /* Thinner line */
+    background: linear-gradient(90deg, var(--gradient-1-start), var(--gradient-1-end));
+    border-radius: 1px;
+    transition: width 0.3s ease-out, bottom 0.2s ease-out;
+}
+
+nav a:hover::after {
+    width: 60%; /* Smaller width on hover */
+    bottom: 2px;
+}
+
+/* --- Nav Active Effect (Compact & Highlighted) --- */
+nav a.active {
+    color: var(--accent-light);
+    font-weight: 700;
+    background-color: rgba(var(--accent-main-rgb, 52, 211, 153), 0.15); /* Less opaque background */
+    transform: translateY(-3px); /* Smaller lift for active */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), /* Smaller, but still distinct shadow */
+                0 0 12px rgba(var(--accent-light-rgb, 93, 230, 215), 0.5); /* Less intense glow */
+    border-radius: 8px; /* Adjusted border-radius for compactness */
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border: 1px solid rgba(var(--accent-light-rgb, 93, 230, 215), 0.3); /* Softer border */
+    position: relative;
+    /* Add a transition specific for active state hovers */
+    transition: all 0.25s ease-out; /* Smooth transition for its own hover state */
+}
+
+nav a.active i {
+    color: var(--accent-light);
+}
+
+nav a.active::before {
+    transform: scaleX(1);
+    background: rgba(var(--accent-main-rgb, 52, 211, 153), 0.2); /* Less opaque active background fill */
+    border-radius: 8px; /* Match active link border-radius */
+}
+
+nav a.active::after {
+    width: 80%; /* Smaller active line width */
+    height: 3px; /* Thinner active line */
+    bottom: 0;
+    background: linear-gradient(90deg, var(--accent-light), var(--accent-main), var(--accent-dark));
+    box-shadow: 0 0 8px rgba(var(--accent-light-rgb, 93, 230, 215), 0.6); 
+    border-radius: 2px;
+}
+
+/* ---   ACTIVE HOVER EFFECT --- */
+nav a.active:hover {
+    color: var(--text-heading); 
+    
+    transform: translateY(-2px); 
+    background-color: rgba(var(--accent-main-rgb, 52, 211, 153), 0.25); /* Slightly more opaque background on active hover */
+    /* Enhance the border for a stronger visual cue */
+    border: 1px solid var(--accent-light); /* Solid accent border */
+    /* Add a very distinct, but still compact, shadow/glow */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), /* Deeper shadow for focus */
+                0 0 18px rgba(var(--accent-light-rgb, 93, 230, 215), 0.8); /* More intense glow around it */
+    cursor: default; /* Optional: Change cursor to indicate it's already active/selected */
+}
+
+nav a.active:hover i {
+    color: var(--text-heading); /* Make icon color match heading text on active hover */
+}
+
+/* Ensure the active pseudo-elements also respond */
+nav a.active:hover::before {
+    background: rgba(var(--accent-main-rgb, 52, 211, 153), 0.3); /* More solid background fill on active hover */
+}
+
+nav a.active:hover::after {
+    width: 90%; 
+    height: 4px; 
+    background: linear-gradient(90deg, var(--accent-light), var(--accent-main), var(--accent-dark)); 
+    box-shadow: 0 0 12px rgba(var(--accent-light-rgb, 93, 230, 215), 0.9);
+}
+
+
+
+nav {
+    opacity: 0;
+    transform: translateY(-15px); 
+    animation: navFadeInDrop 0.7s forwards ease-out; 
+}
+
+@keyframes navFadeInDrop {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+        .header-auth {
+            display: flex;
+            gap: 20px; 
+        }
+       
+        .header-auth a {
+            text-decoration: none;
+            color: rgb(187, 187, 187);
+            font-size: 0.7rem; 
+            font-weight: 600;
+            transition: color 0.3s ease, transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            padding: 8px 10px; 
+            border-radius: 6px;
+            
+            display: flex;
+            flex-direction: column; 
+            align-items: center; 
+            gap: 3px; 
+            line-height: 1.2; 
+        }
+
+        .header-auth a i {
+            font-size: 1.1rem; 
+            margin-bottom: 2px; 
+        }
+
+
+        .header-auth a:hover {
+            color: rgb(255, 255, 255);
+            font-size: 0.7.5rem;
+            transform: translateY(-4px);
+            background-color: var(--tertiary-hover-bg);
+        }
+
+        .header-auth a.active {
+            color: var(--primary-dark-bg);
+            background: linear-gradient(90deg, var(--gradient-1-start), var(--gradient-1-end));
+           
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--shadow-glow);
+        }
+
+        .header-auth a.active:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(52, 211, 153, 0.5);
+        }
+
+       
+        @media (max-width: 992px) {
+            
+            .mobile-menu-toggle {
+                display: block; 
+            }
+            nav { 
+                display: none;
+            }
+
+            header {
+                padding: 20px 30px;
+                flex-wrap: wrap;
+                justify-content: space-between; /* Keep logo and toggle separated */
+                gap: 15px;
+            }
+            .header-left {
+                 /* Allow header-left to shrink */
+                justify-content: flex; /* Align logo and toggle to the left */
+                gap: 15px;
+            }
+            /* nav ul { Moved to 'nav' selector above } */
+
+            .header-auth {
+                width: 100%; /* Make auth section take full width below header-left */
+                justify-content: center;
+                margin-top: 10px;
+                gap: 15px; /* Adjusted gap for smaller screens */
+            }
+            /* Ensure vertical stack on larger mobile/tablet too */
+            .header-auth a {
+                padding: 8px 10px;
+                font-size: 0.75rem; /* Adjust text size for smaller screens */
+            }
+            .header-auth a i {
+                font-size: 1.05rem; /* Adjust icon size for smaller screens */
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px 20px;
+                border-radius: 0;
+            }
+            /* header-left should maintain row for toggle and logo */
+            .header-left {
+                width: 100%;
+                flex-direction: row; /* Keep toggle and logo side-by-side */
+                justify-content: flex-start; /* Push toggle to left, logo to right */
+                align-items: center;
+                gap: 10px; /* Small gap between toggle and logo, adjust as needed */
+            }
+            .header-logo {
+                font-size: 1.4rem;
+                gap: 10px;
+                flex-direction: row;
+            }
+            .header-logo i {
+                font-size: 1.8rem;
+                margin-bottom: 0;
+            }
+            .logo-text {
+                display: contents;
+                flex-direction: row;
+                align-items: flex-start;
+            }
+            .company-name {
+                margin-left: 0;
+                margin-top: 2px;
+                font-size: 0.8rem;
+            }
+            /* Re-introduce nav ul as column when menu is expanded (this would require JS to actually show/hide) */
+            nav { /* For demonstration, if nav were to show up as a column */
+                /* display: none; */ /* Still hidden, until JS shows it */
+                width: 100%;
+                margin-top: 10px;
+            }
+            nav ul {
+                flex-direction: column;
+                gap: 8px; /* Adjusted gap for mobile vertical nav */
+            }
+            nav a { /* Ensure mobile nav items are still readable */
+                font-size: 0.9rem;
+                padding: 5px 10px;
+                gap: 5px;
+                width: fit-content; /* Prevent stretching */
+                margin: 0 auto; /* Center individual nav items if menu is full width */
+            }
+            nav a i {
+                font-size: 0.95rem;
+            }
+            /* Authentication links on small mobile */
+            .header-auth a {
+                font-size: 0.7rem; /* Even smaller for very compact mobile */
+                padding: 6px 8px;
+                gap: 2px;
+            }
+            .header-auth a i {
+                font-size: 1rem;
+            }
+        }
+
+        /* this upload btn section */
+        /* --- Upload Section Styling --- */
+.upload-section {
+    background-color: var(--secondary-card-bg); /* Dark background consistent with your theme */
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px var(--shadow-primary); /* Prominent shadow for depth */
+    max-width: 900px;
+    width: 100%;
+    margin: 40px auto; /* Center and provide space */
+    border: 1px solid var(--border-subtle); /* Subtle border */
+    color: var(--text-heading); /* Light text for readability */
+    text-align: center; /* Center form elements */
+    animation: fadeIn 0.8s ease-out; /* Fade-in animation */
+}
+
+.upload-section h3 {
+    font-size: 2rem;
+    color: var(--accent-light); /* Vibrant heading color */
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px rgba(52, 211, 153, 0.3); /* Soft glow for heading */
+}
+
+.file-input-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px; /* Space between upload button and filename display */
+    margin-bottom: 30px;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.file-input-wrapper input[type="file"] {
+    display: none; /* Hide default file input */
+}
+
+/* Base style for all buttons */
+.button {
+    display: inline-flex; /* Use flex for icon and text alignment */
+    align-items: center;
+    justify-content: center;
+    padding: 12px 25px;
+    border: none; /* Remove default button border */
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease; /* Smooth transitions */
+    white-space: nowrap; /* Prevent text wrapping */
+    gap: 10px; /* Space between icon and text */
+    font-size: 1rem;
+}
+
+.button i {
+    font-size: 1.1rem;
+}
+
+/* Specific button styles */
+.upload-button {
+    background: linear-gradient(90deg, var(--gradient-1-start), var(--gradient-1-end));
+    color: #ffffff;
+    box-shadow: 0 4px 15px var(--shadow-glow); /* Glowing shadow */
+}
+
+.upload-button:hover {
+    transform: translateY(-3px); /* Lift up on hover */
+    box-shadow: 0 6px 20px rgba(52, 211, 153, 0.5); /* Enhanced glow on hover */
+}
+
+#fileName {
+    color: var(--text-body);
+    font-size: 0.95rem;
+    background-color: var(--primary-dark-bg); /* Dark background for file name display */
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: 1px solid var(--border-subtle);
+    min-width: 150px; /* Give it some minimum width */
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Add ellipsis for long file names */
+    white-space: nowrap;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between action buttons */
+    margin-top: 30px;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.view-csv-button {
+    background-color: var(--accent-dark);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(6, 182, 212, 0.3);
+}
+
+.view-csv-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(6, 182, 212, 0.5);
+}
+
+.predict-button {
+    background: linear-gradient(90deg, var(--gradient-2-start), var(--gradient-2-end));
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+}
+
+.predict-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
+}
+
+.clear-button {
+    background-color: var(--text-muted); /* Muted color for less critical action */
+    color: var(--primary-dark-bg); /* Dark text on muted button */
+    box-shadow: 0 4px 10px rgba(113, 128, 150, 0.2);
+}
+
+.clear-button:hover {
+    background-color: #8899ac; /* Slightly lighter grey on hover */
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(113, 128, 150, 0.4);
+}
+
+.button:disabled {
+    opacity: 0.5; /* Dim disabled buttons */
+    cursor: not-allowed;
+    transform: none; /* Remove hover effects when disabled */
+    box-shadow: none;
+}
+
+.error-message {
+    color: var(--button-danger);
+    background-color: rgba(231, 76, 60, 0.1); /* Light red background */
+    border: 1px solid var(--button-danger);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    animation: bounceIn 0.6s ease-out; /* Little bounce for error */
+}
+
+@keyframes bounceIn {
+    0%, 20%, 40%, 60%, 80%, 100% {
+        transition-timing-function: cubic-bezier(0.215, .61, .355, 1);
+    }
+    0% {
+        opacity: 0;
+        transform: scale3d(.3, .3, .3);
+    }
+    20% {
+        transform: scale3d(1.1, 1.1, 1.1);
+    }
+    40% {
+        transform: scale3d(.9, .9, .9);
+    }
+    60% {
+        opacity: 1;
+        transform: scale3d(1.03, 1.03, 1.03);
+    }
+    80% {
+        transform: scale3d(.97, .97, .97);
+    }
+    100% {
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+
+/* Data Preview Container */
+.data-preview-container {
+    background-color: var(--primary-dark-bg); /* Darker background for data preview */
+    padding: 30px;
+    border-radius: 15px;
+    margin-top: 40px;
+    box-shadow: 0 8px 20px var(--shadow-primary);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-body);
+    max-width: 900px;
+    width: 100%;
+    overflow-x: auto; /* Enable horizontal scrolling for tables */
+    animation: fadeIn 1s ease-out;
+}
+
+.data-preview-container h3 {
+    color: var(--accent-main);
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-shadow: 0 0 8px var(--shadow-glow);
+}
+
+.data-preview-container .table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    color: var(--text-body);
+}
+
+.data-preview-container .table-container th,
+.data-preview-container .table-container td {
+    border: 1px solid var(--border-subtle);
+    padding: 12px 15px;
+    text-align: center;
+}
+
+.data-preview-container .table-container th {
+    background-color: var(--tertiary-hover-bg);
+    color: var(--text-heading);
+    font-weight: 600;
+    white-space: nowrap; /* Prevent column headers from wrapping */
+}
+
+.data-preview-container .table-container tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.03); /* Subtle stripe effect */
+}
+
+.data-preview-container .table-container tr:hover {
+    background-color: var(--tertiary-hover-bg); /* Highlight row on hover */
+}
+
+.data-preview-container .download-button {
+    margin-top: 25px;
+    background: linear-gradient(90deg, var(--accent-light), var(--accent-main));
+    color: var(--primary-dark-bg); /* Dark text on light accent button */
+    box-shadow: 0 4px 10px rgba(110, 231, 183, 0.3);
+}
+
+.data-preview-container .download-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(110, 231, 183, 0.5);
+}
+
+.no-data-message {
+    padding: 30px;
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 1.1rem;
+    background-color: var(--tertiary-hover-bg);
+    border-radius: 8px;
+    border: 1px dashed var(--border-subtle); /* Dashed border for placeholder */
+    margin-top: 20px;
+}
+
+/* --- Login/Signup Required Message Styling --- */
+.auth-required-message {
+    background-color: var(--secondary-card-bg); /* Consistent dark card background */
+    color: var(--text-heading);
+    padding: 50px;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px var(--shadow-primary);
+    max-width: 700px;
+    width: 100%;
+    margin: 40px auto;
+    text-align: center;
+    border: 1px solid var(--border-subtle);
+    animation: fadeInScale 0.8s ease-out; /* Eye-catching animation for display */
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.auth-required-message h2 {
+    font-size: 2.5rem;
+    color: var(--accent-main); /* Primary accent color for main heading */
+    margin-bottom: 20px;
+    text-shadow: 0 0 12px var(--shadow-glow); /* Stronger glow */
+}
+
+.auth-required-message p {
+    font-size: 1.1rem;
+    color: var(--text-body);
+    margin-bottom: 30px;
+}
+
+.auth-required-message .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.auth-required-message .button-group .button {
+    padding: 15px 30px; /* Larger buttons for call to action */
+    font-size: 1.1rem;
+}
+
+.auth-required-message .login-button {
+    background: linear-gradient(90deg, var(--accent-dark), var(--gradient-2-start)); /* Blue gradient for login */
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+}
+
+.auth-required-message .login-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(6, 182, 212, 0.6);
+}
+
+.auth-required-message .signup-button {
+    background: linear-gradient(90deg, var(--accent-main), var(--accent-light)); /* Green gradient for signup */
+    color: var(--primary-dark-bg); /* Dark text on lighter gradient */
+    box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4);
+}
+
+.auth-required-message .signup-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(52, 211, 153, 0.6);
+}
+
+/* Responsive adjustments for Upload/Auth Sections */
+@media (max-width: 600px) {
+    .upload-section, .auth-required-message {
+        padding: 30px 20px;
+        margin: 20px auto;
+    }
+
+    .upload-section h3, .auth-required-message h2 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+
+    .file-input-wrapper, .action-buttons, .auth-required-message .button-group {
+        flex-direction: column; /* Stack elements vertically */
+        gap: 15px;
+    }
+
+    .button {
+        width: 100%; /* Full width buttons on small screens */
+    }
+
+    #fileName {
+        width: 100%;
+        text-align: center;
+        min-width: unset;
+    }
+
+    .data-preview-container {
+        padding: 20px;
+        margin-top: 30px;
+    }
+
+    .data-preview-container h3 {
+        font-size: 1.5rem;
+    }
+}
+
+/* -------------------------Toast Container------------------------------------- */
+
+.toast {
+            visibility: hidden;
+            min-width: 280px;
+            margin-left: -140px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+
+            /* Updated Positioning: Use 'bottom' directly for fixed elements */
+            bottom: 400px; /* Toast will appear 400px from the bottom of the viewport */
+
+            font-size: 15px;
+            font-weight: 800; /* Increased font-weight for emphasis */
+            font-style: italic; /* Kept italic style */
+            background-color: #4ca54f; /* Darker green */
+            color: #fffefe; /* Lighter, soft white for text */
+            border: .5px solid #292b2a; /* Explicit border with your dark green, adjusted width */
+            border-radius: 5px; /* Border radius */
+            text-align: center;
+            padding: 10px 17px;
+
+            /* Enhanced Elevation: Stronger, layered box-shadow */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4), /* Main shadow for lift */
+                        0 0 0 1px rgba(0,0,0,0.1); /* Subtle outline for crispness */
+
+            /* Initial state for smooth entry/exit - these values will be overridden by animation */
+            transform: scale(0.9) translateY(20px) rotate(0deg);
+            opacity: 0;
+            /* Transition for properties not explicitly animated, or for initial state changes */
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+
+        .toast.show {
+            visibility: visible;
+            /* The animation now fully defines the show/hide behavior */
+            animation: slideInAndOutElevatedCorner 4s forwards; /* Increased animation duration for more dramatic effect */
+        }
+
+        /* Keyframe animation for slide-in, hold, and dynamic corner-exit with elevation */
+        @keyframes slideInAndOutElevatedCorner {
+            /* Entry: Starts below, scales up with a slight overshoot/bounce */
+            0% {
+                bottom: 300px; /* Start further down */
+                opacity: 0;
+                transform: scale(0.7) rotate(-10deg); /* Smaller and slightly rotated */
+                left: 45%; /* Slightly off-center for entry path */
+                box-shadow: 0 5px 10px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.05); /* Smaller shadow on entry */
+            }
+            8% { /* Overshoot for a bounce effect */
+                bottom: 415px; /* Slightly above final position */
+                opacity: 1;
+                transform: scale(1.1) rotate(5deg); /* Slightly larger, slight rotation */
+                left: 50%;
+                box-shadow: 0 12px 25px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.15); /* Temporarily larger shadow */
+            }
+            15% { /* Settle into final position */
+                bottom: 400px;
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+                left: 50%;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.1); /* Standard shadow */
+            }
+            /* Hold: Toast remains visible and stable */
+            80% {
+                bottom: 400px;
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+                left: 50%;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.1);
+            }
+            /* Exit: Launches towards bottom-left corner with strong rotation and scaling */
+            90% { /* Wind-up/pre-launch phase */
+                bottom: 380px; /* Slight downward shift before launch */
+                opacity: 0.8;
+                transform: scale(0.9) rotate(-30deg); /* Begins to shrink and rotate counter-clockwise */
+                left: 40%; /* Moves left */
+                box-shadow: 0 8px 15px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.08); /* Shadow starts to shrink */
+            }
+            100% { /* Final exit */
+                bottom: -150px; /* Moves significantly down and off-screen */
+                opacity: 0;
+                transform: scale(0.3) rotate(-180deg); /* Much smaller, full counter-clockwise spin */
+                left: -150px; /* Moves far left and off-screen */
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05); /* Shadow almost gone */
+            }
+        }
+
+        /* Add -webkit- prefix for older browser compatibility */
+        @-webkit-keyframes slideInAndOutElevatedCorner {
+            0% {
+                bottom: 300px;
+                opacity: 0;
+                -webkit-transform: scale(0.7) rotate(-10deg);
+                left: 45%;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.05);
+            }
+            8% {
+                bottom: 415px;
+                opacity: 1;
+                -webkit-transform: scale(1.1) rotate(5deg);
+                left: 50%;
+                box-shadow: 0 12px 25px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.15);
+            }
+            15% {
+                bottom: 400px;
+                opacity: 1;
+                -webkit-transform: scale(1) rotate(0deg);
+                left: 50%;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.1);
+            }
+            80% {
+                bottom: 400px;
+                opacity: 1;
+                -webkit-transform: scale(1) rotate(0deg);
+                left: 50%;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.1);
+            }
+            90% {
+                bottom: 380px;
+                opacity: 0.8;
+                -webkit-transform: scale(0.9) rotate(-30deg);
+                left: 40%;
+                box-shadow: 0 8px 15px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.08);
+            }
+            100% {
+                bottom: -150px;
+                opacity: 0;
+                -webkit-transform: scale(0.3) rotate(-180deg);
+                left: -150px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    
+    <header>
+        <div class="header-left">
+            <div class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <a href="HOME" class="header-logo">
+                <i class="fas fa-brain"></i>
+                <div class="logo-text">
+                        <span class="tagline">{{companyname}}</span>
+                        <span class="company-name">Prediction Model</span>
+                </div>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="HOME" class="active"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="DATA" ><i class="fas fa-chart-line"></i> Detail</a></li>
+                    <!-- <li><a href="predict/"><i class="fas fa-history"></i> History</a></li> -->
+                </ul>
+            </nav>
+        </div>
+        
+        <div class="header-auth">
+            {% if profile_name %}
+                <a href="about"><i class="fas fa-user-circle"></i> {{profile_name}}</a>
+                <a href="about"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            {% else %}
+                <a href="signup"><i class="fas fa-user-plus"></i> sign_up</a>
+                <a href="login"><i class="fas fa-sign-in-alt"></i> Login</a>
+            {% endif %}
+            <a href="about"><i class="fas fa-info-circle"></i> About</a>
+        </div>
+    </header>
+
+         
+    
+         {%if message_login %}
+          <div id="myToast" class="toast">{{message_login}}</div>
+         {% elif message_signup %}   
+          <div id="myToast" class="toast">{{message_signup}}</div>
+         {% elif message_logout %}   
+         <div id="myToast" class="toast">{{message_logout}}</div>
+         {% endif%}
+        
+
+
+    <main>
+    <div class="content-box">
+        {%if profile_name%}
+        <h1>Welcome {{profile_name}} in the H_&_M  Model !</h1>
+        {%else %}
+        <h1>Welcome to HR in the H_&_M  Model !</h1>
+        {%endif%}
+        <p>This is Ml_Model where you can find detailed information about our prediction model, data insights, and more. Explore the possibilities with INSPIRE.</p>
+        <p>We're constantly updating our platform with new features and data to provide you with the most accurate and insightful predictions.</p>
+        <a href="#" class="btn">Learn More</a>
+    </div>
+
+    <!-- csv file logic starts  -->
+     
+   {% if profile_name %}
+            <div class="upload-section">
+        <h3>Upload Your CSV for Attrition Prediction</h3>
+    <!-- <form method="POST" enctype="multipart/form-data" id="uploadForm"> -->
+    <form method="POST" enctype="multipart/form-data" id="uploadForm" action="{% url 'predict_csv' %}">
+    
+        {% csrf_token %}
+
+        <div class="file-input-wrapper">
+            <label for="csv_file" class="button upload-button">
+                <i class="fas fa-upload"></i> Upload CSV File
+            </label>
+            <input type="file" id="csv_file" name="csv_file" accept=".csv" onchange="updateFileName(this)"/>
+            <span id="fileName">
+                {% if original_file_name %}
+                    {{ original_file_name }}
+                {% else %}
+                    No file chosen
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="action-buttons">
+            <button type="button" class="button view-csv-button" name="action" value="view_original" id="viewCsvBtn" {% if not original_table_html and not predicted_table_html %}disabled{% endif %}>
+                <i class="fas fa-file-csv"></i> View Uploaded CSV
+            </button>
+
+            <button type="submit" class="button predict-button" name="action" value="predict" id="predictBtn" {% if not model_loaded %}disabled title="Model not loaded. Prediction unavailable."{% endif %}>
+                <i class="fas fa-cogs"></i> Predict Attrition
+                <!-- <div id="myToast" class="toast">Work in progress</div> -->
+            </button>
+
+            <button type="submit" class="button clear-button" id="clearBtn" {% if not original_table_html and not predicted_table_html %}disabled{% endif %}>
+                <i class="fas fa-redo-alt"></i> Clear Data
+            </button>
+        </div>
+
+        <!-- end viceversa  -->
+    </form>
+
+    {% if error_message %}
+        <div class="alert alert-danger" role="alert">
+            {{ error_message }}
+        </div>
+    {% endif %}
+
+    {% if not model_loaded %}
+        <div class="alert alert-warning" role="alert">
+            **Warning:** The Attrition Prediction model could not be loaded. Predictions will not be possible. Please contact support if this issue persists.
+        </div>
+    {% endif %}
+
+    <div id="dataPreview" class="data-preview-container">
+
+     {% if predicted_table_html %} 
+        <h3>Predicted Attrition for {{ original_file_name }}</h3>
+         <div class="table-container">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    {# Dynamically show 'Name' column header if 'Name' key exists in the first row #}
+                    {% if predicted_table_html.0 and 'Name' in predicted_table_html.0 %}
+                        <th>Name</th>
+                    {% endif %}
+                    <th>Attrition Predicted</th>
+                    <th>Attrition Probability</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in predicted_table_html %}
+                    <tr>
+                        {% if 'Name' in row %} {# Show 'Name' data cell if the key exists for the current row #}
+                            <td>{{ row.Name }}</td>
+                        {% endif %}
+                        <td>{{ row.Attrition_Predicted }}</td>
+                        {# Apply 'safe' filter here because Attrition_Probability contains HTML for the circle #}
+                        <td>{{ row.Attrition_Probability|safe }}</td> 
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+                <button type="button" class="button download-button" id="downloadPredictedCsvBtn">
+                    <i class="fas fa-download"></i> Download Predicted csv_file
+                </button>
+                <div id="downloadToast" class="toast">Download started!</div>
+
+
+        {% elif original_table_html %}
+            <h3>Uploaded Data Preview: {{ original_file_name }}</h3>
+            <div class="table-container">
+                {{ original_table_html|safe }}
+            </div>
+            {# You might want a download button for the original CSV here too, if desired #}
+        {% else %}
+            <h3>Uploaded Data Preview</h3>
+            <div class="no-data-message">Upload a CSV file and click "View Uploaded CSV" or "Predict Attrition" to see the results here.</div>
+        {% endif %}
+    </div>
+</div>
+    {% else %}
+        <div class="auth-required-message">
+            
+            <p>To upload your CSV files and get sales predictions, please **log in** or **sign up** for an account. It's quick and easy!</p>
+            <div class="button-group">
+                <a href="login" class="button login-button"><i class="fas fa-sign-in-alt"></i> Log In</a>
+                <a href="signup" class="button signup-button"><i class="fas fa-user-plus"></i> Sign Up</a>
+            </div>
+        </div>
+    {% endif %}
+<!-- end -->
+   
+</main>
+
+        <section id="checks-section" class="checks-section">
+            <h3>Key Checks & Considerations</h3>
+            <ul class="check-list">
+                <li class="check-item">
+                    <i class="fas fa-file-excel"></i>
+                    <div class="check-item-content">
+                        <h4>CSV Format Only</h4>
+                        <p>Ensure your uploaded file is in a standard CSV (Comma Separated Values) format. Other formats are not supported.</p>
+                    </div>
+                </li>
+                <li class="check-item">
+                    <i class="fas fa-columns"></i>
+                    <div class="check-item-content">
+                        <h4>Required Columns</h4>
+                        <p>Your CSV must contain specific columns (e.g., 'TV', 'Radio', 'Newspaper', 'Sales') for accurate prediction. Missing columns will result in an error.</p>
+                    </div>
+                </li>
+                <li class="check-item">
+                    <i class="fas fa-chart-line"></i>
+                    <div class="check-item-content">
+                        <h4>Numerical Data</h4>
+                        <p>All values in the 'TV', 'Radio', and 'Newspaper' columns must be numerical. Non-numeric entries will be skipped or cause issues.</p>
+                    </div>
+                </li>
+                <li class="check-item">
+                    <i class="fas fa-ruler-combined"></i>
+                    <div class="check-item-content">
+                        <h4>Scale & Units</h4>
+                        <p>Ensure your data is in consistent units. While the model handles scaling internally, large disparities can affect interpretation.</p>
+                    </div>
+                </li>
+                <li class="check-item">
+                    <i class="fas fa-database"></i>
+                    <div class="check-item-content">
+                        <h4>Data Volume</h4>
+                        <p>For optimal performance, keep file sizes manageable. Very large files might take longer to process.</p>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+    <footer>
+        &copy; 2025 H_&_M Predictive MODEL. All rights reserved.
+    </footer>
+
+    <script>
+        const fileNameSpan = document.getElementById('fileName');
+        const csvFileInput = document.getElementById('csv_file');
+        const dataPreviewContainer = document.getElementById('dataPreview');
+        const predictBtn = document.getElementById('predictBtn');
+        const viewCsvBtn = document.getElementById('viewCsvBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        // NEW: Select the download button
+        const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+
+
+        // Helper function to escape HTML for safe display in the table
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // NEW: Helper function to convert an HTML table to a CSV string
+        function tableToCsv(table) {
+            let csv = [];
+            let rows = table.querySelectorAll('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                let row = [], cols = rows[i].querySelectorAll('td, th');
+
+                for (let j = 0; j < cols.length; j++) {
+                    // Get innerText and escape double quotes
+                    let data = cols[j].innerText.replace(/"/g, '""'); 
+                    // Enclose data in double quotes to handle commas within cells
+                    row.push(`"${data}"`); 
+                }
+                csv.push(row.join(','));
+            }
+            return csv.join('\n');
+        }
+
+        // Function to update file name display and manage button states
+        function updateFileName(input) {
+            let fileChosen = false;
+            if (input.files && input.files[0]) {
+                fileNameSpan.textContent = input.files[0].name;
+                fileChosen = true;
+            } else {
+                fileNameSpan.textContent = 'No file chosen';
+            }
+
+            // Enable/disable buttons based on file selection
+            viewCsvBtn.disabled = !fileChosen;
+            predictBtn.disabled = !fileChosen;
+            clearBtn.disabled = !fileChosen;
+
+            // Clear any displayed data and hide container/download button when a new file is chosen
+            if (input === csvFileInput) { // Only clear if file input itself changed
+                dataPreviewContainer.innerHTML = `<h3>Uploaded Data Preview</h3><div class="no-data-message">Upload a CSV file and click "View Uploaded CSV" or "Predict Sales" to see the results here.</div>`;
+                dataPreviewContainer.classList.remove('active'); // Hide container
+                if (downloadCsvBtn) { // Hide download button as no predicted data is shown
+                    downloadCsvBtn.style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize button states and file name display on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if Django provided an original_file_name (after a prediction)
+            const originalFileNameFromDjango = "{{ original_file_name|default:'' }}"; 
+            
+            if (originalFileNameFromDjango && originalFileNameFromDjango !== 'None' && originalFileNameFromDjango.trim() !== '') {
+                fileNameSpan.textContent = originalFileNameFromDjango;
+                // Since a file was processed, enable buttons
+                viewCsvBtn.disabled = false;
+                predictBtn.disabled = false;
+                clearBtn.disabled = false;
+            } else {
+                updateFileName(csvFileInput); // Initialize with "No file chosen" and disabled buttons
+            }
+
+            // Show the data preview if predicted_data_html is already present (from Django context)
+            const predictedDataHtmlExists = document.querySelector('#dataPreview .table-container') && document.querySelector('#dataPreview .table-container').innerHTML.trim() !== '';
+            if (predictedDataHtmlExists) {
+                dataPreviewContainer.classList.add('active'); // Show container if data is present
+                if (downloadCsvBtn) {
+                    downloadCsvBtn.style.display = 'inline-flex'; // Show download button
+                }
+            } else {
+                if (downloadCsvBtn) {
+                    downloadCsvBtn.style.display = 'none'; // Hide if no predicted data
+                }
+            }
+        });
+
+        // Event listener for the "View Uploaded CSV" button
+        viewCsvBtn.addEventListener('click', async () => {
+            if (!csvFileInput.files || csvFileInput.files.length === 0) {
+                alert('Please upload a CSV file first.');
+                return;
+            }
+
+            const file = csvFileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const csvText = e.target.result;
+                const rows = csvText.split('\n').filter(row => row.trim() !== ''); // Filter out empty rows
+                
+                let html = '<table><thead><tr>';
+                const headers = rows[0].split(',').map(h => escapeHtml(h.trim()));
+                headers.forEach(header => {
+                    html += `<th>${header}</th>`;
+                });
+                html += '</tr></thead><tbody>';
+
+                for (let i = 1; i < rows.length; i++) {
+                    html += '<tr>';
+                    const cells = rows[i].split(',').map(c => escapeHtml(c.trim()));
+                    cells.forEach(cell => {
+                        html += `<td>${cell}</td>`;
+                    });
+                    html += '</tr>';
+                }
+                html += '</tbody></table>';
+
+                dataPreviewContainer.innerHTML = `<h3>Uploaded Data Preview for ${escapeHtml(file.name)}</h3><div class="table-container">${html}</div>`;
+                dataPreviewContainer.classList.add('active'); // Show the container
+                if (downloadCsvBtn) {
+                    downloadCsvBtn.style.display = 'none'; // Hide download button when viewing original CSV
+                }
+            };
+
+            reader.onerror = function() {
+                dataPreviewContainer.innerHTML = `<p class="error-message">Could not read file: ${file.name}</p>`;
+                dataPreviewContainer.classList.add('active');
+                if (downloadCsvBtn) { downloadCsvBtn.style.display = 'none'; }
+            };
+
+            reader.readAsText(file);
+        });
+
+        // Event listener for the "Clear Data" button
+        clearBtn.addEventListener('click', () => {
+            csvFileInput.value = ''; // Clear the file input
+            updateFileName(csvFileInput); // Reset file name display and button states
+            dataPreviewContainer.innerHTML = `<h3>Uploaded Data Preview</h3><div class="no-data-message">Upload a CSV file and click "View Uploaded CSV" or "Predict Sales" to see the results here.</div>`;
+            dataPreviewContainer.classList.remove('active'); // Hide the data preview container
+            if (downloadCsvBtn) {
+                downloadCsvBtn.style.display = 'none'; // Hide download button
+            }
+        });
+
+        // NEW: Event listener for the "Download Predicted Data" button
+        if (downloadCsvBtn) { // Only add listener if the button exists on the page
+            downloadCsvBtn.addEventListener('click', () => {
+                const predictedTable = document.querySelector('#dataPreview .table-container table');
+                if (predictedTable) {
+                    const csvContent = tableToCsv(predictedTable);
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', 'predicted_sales_data.csv');
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    alert('No predicted data table found to download.');
+                }
+            });
+        }
+
+
+         
+        // JavaScript to show the toast automatically when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            var x = document.getElementById("myToast");
+            x.className = "toast show";
+            setTimeout(function(){
+                x.className = x.className.replace("show", "");
+            }, 3000); // 3000 milliseconds = 3 seconds
+        });
+    
+    // below is j.s for download
+     // JavaScript to handle the download button click
+                document.getElementById('downloadPredictedCsvBtn').addEventListener('click', function() {
+                    // When the button is clicked, redirect the browser to the download URL.
+                    // Django will handle retrieving the data from the session and serving the CSV.
+                    // Using {% url 'download_predicted_csv' %} ensures the URL is correct based on your Django setup.
+                    window.location.href = "{% url 'download_predicted_csv' %}";
+                });
+    
+        
+    </script>
+</body>
+</html>
