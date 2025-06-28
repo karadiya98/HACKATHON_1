@@ -135,7 +135,7 @@ def userdata_view(request):
 
 # below is just knownig that logout is there 
 def about_logout(request):
-
+    
     return render(request, "about_logout.html")
 
 def login(request):

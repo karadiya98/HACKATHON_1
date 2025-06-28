@@ -303,11 +303,13 @@
             header {
                 padding: 20px 30px;
                 flex-wrap: wrap;
+                margin-right: 100px;
                 justify-content: space-between; /* Keep logo and toggle separated */
                 gap: 15px;
             }
             .header-left {
                 width: auto; /* Allow header-left to shrink */
+                margin-right: 100px;
                 justify-content: flex-start; /* Align logo and toggle to the left */
                 gap: 15px;
             }
@@ -342,6 +344,7 @@
                 flex-direction: row; /* Keep toggle and logo side-by-side */
                 justify-content: space-between; /* Push toggle to left, logo to right */
                 align-items: center;
+                margin-left: 100px;
                 gap: 10px; /* Small gap between toggle and logo, adjust as needed */
             }
             .header-logo {
@@ -451,6 +454,327 @@
             box-shadow: 0 6px 15px var(--shadow-glow);
         }
 
+
+        /* below  */
+header {
+    display: flex;
+    justify-content: space-between; /* Keeps logo-nav-auth spaced out */
+    align-items: center;
+    padding: 20px 40px;
+    
+    background: var(--primary-dark-bg);
+    box-shadow: 0 3px 10px var(--shadow-primary);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-subtle);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-radius: 0 0 10px 10px;
+    transition: all 0.3s ease-in-out;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    /* --- KEY CHANGE 1: Removed flex-grow and justify-content from header-left --- */
+    /* This ensures header-left (logo + mobile toggle) stays at its natural size on the left */
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+    display: none;
+    font-size: 1.5rem;
+    color: var(--text-heading);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.mobile-menu-toggle:hover {
+    transform: scale(1.1);
+    color: var(--accent-main);
+}
+
+.header-logo {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--accent-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-shadow: 0 0 8px var(--shadow-glow);
+    text-decoration: none;
+    transition: transform 0.3s ease-out, text-shadow 0.3s ease-out;
+}
+
+.header-logo:hover {
+    transform: scale(1.02);
+    text-shadow: 0 0 12px var(--accent-light);
+}
+
+.header-logo i {
+    font-size: 1.7rem;
+    color: var(--accent-main);
+    transition: transform 0.3s ease-out;
+}
+
+.header-logo:hover i {
+    transform: rotate(5deg);
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: auto;
+    margin-right: 0;
+}
+
+.logo-text .company-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text-heading);
+    width: 100%;
+    text-align: left;
+    margin: 0;
+}
+
+.logo-text .tagline {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    opacity: 0.8;
+    margin-top: 1px;
+    width: 100%;
+    text-align: left;
+    line-height: 1;
+    margin-right: 0;
+}
+
+/* --- Navigation Centering --- */
+nav {
+    /* --- KEY CHANGE 2: Add flex-grow: 1 to nav --- */
+    /* This makes the nav element fill the available space */
+    flex-grow: 1;
+    /* --- KEY CHANGE 3: Center its content horizontally --- */
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    margin-left: 0; /* Ensure no inherited left margin */
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 25px;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 6px 12px;
+    position: relative;
+    transition: color 0.3s ease, background-color 0.3s ease, transform 0.2s ease;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+}
+
+nav a::before { /* New element for glowing border animation */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    border: 1px solid transparent;
+    background: linear-gradient(45deg, #34d399, #6ee7b7, #34d399) border-box;
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    z-index: -1; /* Place behind content */
+}
+
+nav a:hover::before {
+    opacity: 1;
+    transform: scale(1);
+    animation: rotateBorder 2s linear infinite; /* Animation for the glowing border */
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 2px;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gradient-1-start), var(--gradient-1-end));
+    border-radius: 1px;
+    transition: width 0.3s ease;
+}
+
+nav a:hover {
+    color: var(--text-heading);
+    background-color: var(--tertiary-hover-bg);
+    transform: translateY(-1px);
+}
+
+nav a:hover::after {
+    width: 70%;
+}
+
+nav a.active {
+    color: var(--accent-main);
+    font-weight: 600;
+    background-color: rgba(52, 211, 153, 0.1);
+    transform: translateY(-1px);
+}
+
+nav a.active::after {
+    width: 90%;
+    background: var(--accent-main);
+}
+
+/* Keyframe for the rotating glowing border */
+@keyframes rotateBorder {
+    from {
+        transform: scale(1) rotate(0deg);
+    }
+    to {
+        transform: scale(1) rotate(360deg);
+    }
+}
+
+
+.header-auth {
+    display: flex;
+    gap: 15px;
+    /* --- KEY CHANGE 4: Add margin-left: auto to push it to the far right --- */
+    /* This makes the auth section push itself as far right as possible */
+    margin-left: auto;
+}
+
+.header-auth a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
+}
+
+.header-auth a:hover {
+    color: var(--text-heading);
+    transform: translateY(-1px);
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
+}
+
+/* --- Responsive Adjustments for Header --- */
+@media (max-width: 992px) {
+    header {
+        padding: 10px 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .header-left {
+        width: 100%; /* Allows logo and toggle to take full width if needed */
+        justify-content: center; /* Centers logo and toggle together */
+        gap: 10px;
+    }
+    nav {
+        width: 100%; /* Nav takes full width to help center its items */
+        justify-content: center; /* Ensures ul content is centered */
+    }
+    nav ul {
+        width: 100%;
+        justify-content: center; /* Ensure ul content is centered */
+        margin-left: 0;
+        gap: 15px;
+    }
+    .header-auth {
+        width: 100%;
+        justify-content: center;
+        margin-top: 8px;
+        margin-left: 0; /* Reset auto margin on smaller screens if wrapping */
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px 15px;
+        border-radius: 0;
+    }
+    .header-left {
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between; /* Logo left, mobile toggle right */
+        gap: 8px;
+    }
+    .mobile-menu-toggle {
+        display: block;
+        font-size: 1.4rem;
+    }
+    nav {
+        display: none;
+        width: 100%;
+        margin-top: 8px;
+    }
+    nav.active {
+        display: block;
+    }
+    nav ul {
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+    }
+    nav a {
+        width: 100%;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    .header-auth {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        margin-top: 8px;
+    }
+    .header-auth a {
+        width: 100%;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        border: 1px solid var(--border-subtle);
+        border-radius: 5px;
+    }
+    .header-logo {
+        font-size: 1.2rem;
+        gap: 8px;
+    }
+    .header-logo i {
+        font-size: 1.5rem;
+    }
+    .logo-text .company-name {
+        font-size: 1.2rem;
+    }
+    .logo-text .tagline {
+        font-size: 0.75rem;
+    }
+}
     </style>
 </head>
 <body>
@@ -462,18 +786,19 @@
             <a href="HOME" class="header-logo">
                 <i class="fas fa-brain"></i>
                 <div class="logo-text">
-                    <span class="tagline">{{companyname}}</span>
-                    <span class="company-name">Prediction Model</span>
+                        <span class="company-name">{{companyname}}</span>
+                        <span class="tagline">Prediction Model</span>
                 </div>
             </a>
             <nav>
                 <ul>
-                    <li><a href="HOME"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="HOME" ><i class="fas fa-home"></i> Home</a></li>
                     <li><a href="DATA" class="active"><i class="fas fa-chart-line"></i> Detail</a></li>
                     <!-- <li><a href="predict/"><i class="fas fa-history"></i> History</a></li> -->
                 </ul>
             </nav>
         </div>
+        
         <div class="header-auth">
             {% if profile_name %}
                 <a href="about"><i class="fas fa-user-circle"></i> {{profile_name}}</a>
