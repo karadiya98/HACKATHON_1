@@ -2432,117 +2432,118 @@ nav a.active::after {
 
     <!-- csv file logic starts  -->
      
+
+     
    {% if profile_name %}
-            <div class="upload-section">
+    <div class="upload-section">
         <h3>Upload Your CSV for Attrition Prediction</h3>
-    <!-- <form method="POST" enctype="multipart/form-data" id="uploadForm"> -->
-    <form method="POST" enctype="multipart/form-data" id="uploadForm" action="{% url 'predict_csv' %}">
-    
-        {% csrf_token %}
+        <form method="POST" enctype="multipart/form-data" id="uploadForm" action="{% url 'predict_csv' %}">
+            {% csrf_token %}
 
-        <div class="file-input-wrapper">
-            <label for="csv_file" class="button upload-button">
-                <i class="fas fa-upload"></i> Upload CSV File
-            </label>
-            <input type="file" id="csv_file" name="csv_file" accept=".csv" onchange="updateFileName(this)"/>
-            <span id="fileName">
-                {% if original_file_name %}
-                    {{ original_file_name }}
-                {% else %}
-                    No file chosen
-                {% endif %}
-            </span>
-        </div>
-
-        <div class="action-buttons">
-            <button type="button" class="button view-csv-button" name="action" value="view_original" id="viewCsvBtn" {% if not original_table_html and not predicted_table_html %}disabled{% endif %}>
-                <i class="fas fa-file-csv"></i> View Uploaded CSV
-            </button>
-
-            <button type="submit" class="button predict-button" name="action" value="predict" id="predictBtn" {% if not model_loaded %}disabled title="Model not loaded. Prediction unavailable."{% endif %}>
-                <i class="fas fa-cogs"></i> Predict Attrition
-                <!-- <div id="myToast" class="toast">Work in progress</div> -->
-            </button>
-
-            <button type="submit" class="button clear-button" id="clearBtn" {% if not original_table_html and not predicted_table_html %}disabled{% endif %}>
-                <i class="fas fa-redo-alt"></i> Clear Data
-            </button>
-        </div>
-
-        <!-- end viceversa  -->
-    </form>
-
-    {% if error_message %}
-        <div class="alert alert-danger" role="alert">
-            {{ error_message }}
-        </div>
-    {% endif %}
-
-    {% if not model_loaded %}
-        <div class="alert alert-warning" role="alert">
-            **Warning:** The Attrition Prediction model could not be loaded. Predictions will not be possible. Please contact support if this issue persists.
-        </div>
-    {% endif %}
-
-    <div id="dataPreview" class="data-preview-container">
-
-     {% if predicted_table_html %} 
-        <h3>Predicted Attrition for {{ original_file_name }}</h3>
-         <div class="table-container">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    {# Dynamically show 'Name' column header if 'Name' key exists in the first row #}
-                    {% if predicted_table_html.0 and 'Name' in predicted_table_html.0 %}
-                        <th>Name</th>
+            <div class="file-input-wrapper">
+                <label for="csv_file" class="button upload-button">
+                    <i class="fas fa-upload"></i> Upload CSV File
+                </label>
+                <input type="file" id="csv_file" name="csv_file" accept=".csv" onchange="updateFileName(this)"/>
+                <span id="fileName">
+                    {% if original_file_name %}
+                        {{ original_file_name }}
+                    {% else %}
+                        No file chosen
                     {% endif %}
-                    <th>Attrition Predicted</th>
-                    <th>Attrition Probability</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in predicted_table_html %}
-                    <tr>
-                        {% if 'Name' in row %} {# Show 'Name' data cell if the key exists for the current row #}
-                            <td>{{ row.Name }}</td>
-                        {% endif %}
-                        <td>{{ row.Attrition_Predicted }}</td>
-                        {# Apply 'safe' filter here because Attrition_Probability contains HTML for the circle #}
-                        <td>{{ row.Attrition_Probability|safe }}</td> 
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                </span>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="button view-csv-button" name="action" value="view_original" id="viewCsvBtn" {% if not original_table_html and not predicted_table_html %}disabled{% endif %}>
+                    <i class="fas fa-file-csv"></i> View Uploaded CSV
+                </button>
+
+                <button type="submit" class="button predict-button" name="action" value="predict" id="predictBtn" {% if not model_loaded %}disabled title="Model not loaded. Prediction unavailable."{% endif %}>
+                    <i class="fas fa-cogs"></i> Predict Attrition
+                    </button>
+
+                <button type="submit" class="button clear-button" id="clearBtn" {% if not original_table_html and not predicted_table_html %}disabled{% endif %}>
+                    <i class="fas fa-redo-alt"></i> Clear Data
+                </button>
+            </div>
+        </form>
+
+        {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+                {{ error_message }}
+            </div>
+        {% endif %}
+
+        {% if not model_loaded %}
+            <div class="alert alert-warning" role="alert">
+                *Warning:* The Attrition Prediction model could not be loaded. Predictions will not be possible. Please contact support if this issue persists.
+            </div>
+        {% endif %}
+
+        <div id="dataPreview" class="data-preview-container">
+            {% if predicted_table_html %} 
+                <h3>Predicted Attrition for {{ original_file_name }}</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                {% if predicted_table_html.0 and 'Name' in predicted_table_html.0 %}
+                                    <th>Name</th>
+                                {% endif %}
+                                <th>Attrition Predicted</th>
+                                <th>Attrition Probability</th>
+                                {% if predicted_table_html.0 and 'Key_Risk_Factor' in predicted_table_html.0 %}
+                                    <th>Key Risk Factor</th>
+                                {% endif %}
+                                {% if predicted_table_html.0 and 'Suggestion' in predicted_table_html.0 %}
+                                    <th>Suggestion</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in predicted_table_html %}
+                                <tr>
+                                    {% if 'Name' in row %}
+                                        <td>{{ row.Name }}</td>
+                                    {% endif %}
+                                    <td>{{ row.Attrition_Predicted }}</td>
+                                    <td>{{ row.Attrition_Probability|safe }}</td>
+                                    {% if 'Key_Risk_Factor' in row %}
+                                        <td>{{ row.Key_Risk_Factor }}</td>
+                                    {% endif %}
+                                    {% if 'Suggestion' in row %}
+                                        <td>{{ row.Suggestion }}</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
                 <button type="button" class="button download-button" id="downloadPredictedCsvBtn">
                     <i class="fas fa-download"></i> Download Predicted csv_file
                 </button>
-                <div id="downloadToast" class="toast">Download started!</div>
-
-
-        {% elif original_table_html %}
-            <h3>Uploaded Data Preview: {{ original_file_name }}</h3>
-            <div class="table-container">
-                {{ original_table_html|safe }}
-            </div>
-            {# You might want a download button for the original CSV here too, if desired #}
-        {% else %}
-            <h3>Uploaded Data Preview</h3>
-            <div class="no-data-message">Upload a CSV file and click "View Uploaded CSV" or "Predict Attrition" to see the results here.</div>
-        {% endif %}
-    </div>
-</div>
-    {% else %}
-        <div class="auth-required-message">
-            
-            <p>To upload your CSV files and get sales predictions, please **log in** or **sign up** for an account. It's quick and easy!</p>
-            <div class="button-group">
-                <a href="login" class="button login-button"><i class="fas fa-sign-in-alt"></i> Log In</a>
-                <a href="signup" class="button signup-button"><i class="fas fa-user-plus"></i> Sign Up</a>
-            </div>
+            {% elif original_table_html %}
+                <h3>Uploaded Data Preview: {{ original_file_name }}</h3>
+                <div class="table-container">
+                    {{ original_table_html|safe }}
+                </div>
+            {% else %}
+                <h3>Uploaded Data Preview</h3>
+                <div class="no-data-message">Upload a CSV file and click "View Uploaded CSV" or "Predict Attrition" to see the results here.</div>
+            {% endif %}
         </div>
-    {% endif %}
-<!-- end -->
+
+{% else %}
+    <div class="auth-required-message">
+        <p>To upload your CSV files and get sales predictions, please **log in** or **sign up** for an account. It's quick and easy!</p>
+        <div class="button-group">
+            <a href="{% url 'login' %}" class="button login-button"><i class="fas fa-sign-in-alt"></i> Log In</a>
+            <a href="{% url 'signup' %}" class="button signup-button"><i class="fas fa-user-plus"></i> Sign Up</a>
+        </div>
+    </div>
+{% endif %}
+<!-- end this above -->
    
 </main>
 

@@ -162,9 +162,6 @@ def logout(request):
 
 # ----------------------------------BELOW IS CSV FILE IMPLEMENTATION------------------------------------------------
 
-
- 
-
 import os
 import joblib
 import pandas as pd
@@ -187,6 +184,16 @@ except FileNotFoundError as e:
     cat_model = None
     scaler = None
     label_encoders = None
+
+
+
+# ✅ ADDITION: Load predictions_with_risk_factors
+try:
+    risk_factors_df = joblib.load(os.path.join(MODEL_DIR, 'predictions_with_risk_factors.pkl'))
+except:
+    risk_factors_df = None
+
+
 
 
 def predict_csv(request):
@@ -213,6 +220,7 @@ def predict_csv(request):
             name_column = df['Name'].copy()
             df = df.drop(columns=['Name']) 
 
+
         if action == 'view_original':
             # Display the original CSV content as an HTML table
             html_table = df.to_html(classes="table table-bordered", index=False)
@@ -221,6 +229,7 @@ def predict_csv(request):
                 'original_file_name': csv_file.name,
                 'model_loaded': True 
             })
+
 
         elif action == 'predict':
             if cat_model is None or scaler is None or label_encoders is None:
@@ -242,28 +251,47 @@ def predict_csv(request):
                 return render(request, 'HOME.html', {'error_message': 'Scaling failed. Check your CSV columns and ensure they match the training data used for the model.'})
 
         
-            probabilities = cat_model.predict_proba(df_scaled)[:, 1] # Get probability of attrition 
-            predictions = (probabilities >= 0.3).astype(int) # Predict 1 (Attrition) if probability >= 0.3
+            probabilities = cat_model.predict_proba(df_scaled)[:, 1]  
+            predictions = (probabilities >= 0.3).astype(int) 
 
-            # Add results to the DataFrame
-            df['Attrition_Probability'] = probabilities
-            df['Attrition_Predicted'] = predictions
+            
+            result_df = pd.DataFrame({
+                'Attrition_Predicted': predictions,
+                'Attrition_Probability': probabilities
+            })
 
-            # Add the 'Name' column back
+
+
+            # ADDITION: Add Key_Risk_Factor and Suggestion from precomputed DataFrame
+            if risk_factors_df is not None and len(risk_factors_df) >= len(df):
+                result_df['Key_Risk_Factor'] = risk_factors_df['Key_Risk_Factor'][:len(df)].values
+                # result_df['Suggestion'] = risk_factors_df['Suggestion'][:len(df)].values
+            else:
+                result_df['Key_Risk_Factor'] = 'N/A'
+                # result_df['Suggestion'] = 'N/A'
+
+
+
+
+
+           
+
+
             if name_column is not None:
-                df['Name'] = name_column
+                result_df['Name'] = name_column
                 
-                df = df[['Name', 'Attrition_Predicted', 'Attrition_Probability']]
+                result_df = result_df[['Name', 'Attrition_Predicted', 'Attrition_Probability', 'Key_Risk_Factor']]
             else:
                
-                df = df[['Attrition_Predicted', 'Attrition_Probability']]
+                result_df = result_df[['Attrition_Predicted', 'Attrition_Probability', 'Key_Risk_Factor']]
 
-            request.session['predicted_data_for_download'] = df.to_dict(orient='records')
+
+            request.session['predicted_data_for_download'] = result_df.to_dict(orient='records')
             request.session['original_file_name'] = csv_file.name 
             request.session.modified = True 
 
             results_for_display = []
-            for index, row in df.iterrows():
+            for index, row in result_df.iterrows():
                 row_dict = row.to_dict()
                 prob = row_dict['Attrition_Probability']
                 color = 'red' if prob >= 0.30 else 'green' 
@@ -271,11 +299,11 @@ def predict_csv(request):
                 
                 row_dict['Attrition_Probability'] = f"{prob:.4f} {circle_html}"
                 results_for_display.append(row_dict)
-
+                
             return render(request, 'HOME.html', {
-                'predicted_table_html': results_for_display, # Data with HTML for display
+                'predicted_table_html': results_for_display, 
                 'original_file_name': csv_file.name,
-                'model_loaded': True # Indicate model is ready for use
+                'model_loaded': True 
             })
 
     
