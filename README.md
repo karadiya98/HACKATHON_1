@@ -1,6 +1,6 @@
 1] This is <strong> LAUNCHING PAGE</strong> of website  
 <div >
-  <img src="PREDICTION/S1.png" width="100%">
+  <img src="PREDICTION/S2.png" width="100%">
 </div>
 
 
